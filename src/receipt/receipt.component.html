@@ -1,0 +1,81 @@
+<div class="container mt-2">
+  <div class="row">
+    <div class="col-sm-2 col-md-4 ">
+        <div class="d-flex ps-5">
+            <img class="logo" src="assets/images/logo.png" alt="Ghodke Jewellers logo"/>
+        </div>
+    </div>
+    <div class="col-sm-2 col-md-4  d-flex flex-column">
+        <div class="d-flex flex-column justify-content-md-center" id="title">
+            <h1>Ghodke Jewellers</h1>
+            <h6>84, Sadashiv peth, satara</h6>
+            <h6>Contact: 9012345678</h6>
+        </div>
+    </div>
+    <div class="col-sm-2 col-md-4 ">
+        <div class="d-flex ps-5">
+            <img class="logo" src="assets/images/hallmark-logo.svg" alt="Hallmark logo"/>
+        </div>
+    </div>
+  </div>
+  <div class="row">
+    <table class="table table-striped table-bordered mt-3">
+        <thead>
+            <tr>
+                <th class="col-md-7">Items</th>
+                <th class="col-md-2">HUID No.</th>
+                <th class="col-md-2">Weight</th>
+                <th class="col-md-1">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of formdata.items; track $index) {
+                <tr>
+                    <td class="col-md-7">{{item.itemPurchase}}</td>
+                    <td class="col-md-2">{{item.HUID}}</td>
+                    <td class="col-md-2">{{item.weight}} g</td>
+                    <td class="col-md-1">{{item.weight * formdata.goldRate * (1 + formdata.makingCharge/100) | currency:'INR'}}</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+                 <tr>
+                    <td class="col-md-7"></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">CGST 1.5%</td>
+                    <td class="col-md-1 fw-bold">{{ cgst | currency:'INR' }}</td>
+                </tr>
+                <tr>
+                    <td class="col-md-7"></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">SGST 1.5%</td>
+                    <td class="col-md-1 fw-bold">{{ sgst | currency:'INR' }}</td>
+                </tr>
+                <tr>
+                    <td class="col-md-7"></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">Total Amount</td>
+                    <td class="col-md-1 fw-bold">{{ getTotalPrice() | currency:'INR' }}</td>
+                </tr>
+                <tr>
+                    <td class="col-md-7"></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">Less URD</td>
+                    <td class="col-md-1 fw-bold">{{ formdata.URD | currency:'INR' }}</td>
+                </tr>
+                <tr>
+                    <td class="col-md-7"></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">Discount</td>
+                    <td class="col-md-1 fw-bold">{{ formdata.discount | currency:'INR' }}</td>
+                </tr>
+                <tr>
+                    <td class="col-md-7"></td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">Final Amount</td>
+                    <td class="col-md-1 fw-bold">{{ getTotalPrice() - formdata.discount - formdata.URD | currency:'INR' }}</td>
+                </tr>
+        </tfoot>
+    </table>
+  </div>
+</div>
