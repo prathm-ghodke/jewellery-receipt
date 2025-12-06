@@ -19,3 +19,4 @@ export class AppComponent {
     console.log('Current Step in App Component:', this.currentStep);
   }
 }
+
