@@ -1,107 +1,85 @@
 <div class="container-fluid my-3">
-    <mat-accordion>
-        <mat-expansion-panel [expanded]="currentStep === 1" (opened)="setStep(1)" hideToggle>
-            <mat-expansion-panel-header>
-                <mat-panel-title> Items Purchased </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div>
-                <form [formGroup]="goldPurchaseForm" (ngSubmit)="save()">
-                    <div class="row">
-                        <div class="col-sm-6 col-md-3 my-2">
-                            <input type="number" class="form-control" id="goldRate" formControlName="goldRate" placeholder="Today's Gold Rate" (change)="calculatePrice()"/>
-                            @if (goldPurchaseForm.get('goldRate')?.invalid && (goldPurchaseForm.get('goldRate')?.touched || goldPurchaseForm.get('goldRate')?.dirty)) {
-                                @if (goldPurchaseForm.get('goldRate')?.errors?.['required']) {
-                                    <small class="validationError">*Please enter gold rate</small>
-                                }
-                            }
-                        </div>
-                        <div class="col-sm-6 col-md-3 my-2">
-                            <input type="number" class="form-control" id="makingCharge" formControlName="makingCharge" placeholder="Making charges" (change)="calculatePrice()"/>
-                            @if (goldPurchaseForm.get('makingCharge')?.invalid && (goldPurchaseForm.get('makingCharge')?.touched || goldPurchaseForm.get('makingCharge')?.dirty)) {
-                                @if (goldPurchaseForm.get('makingCharge')?.errors?.['required']) {
-                                    <small class="validationError">*Please enter making charges</small>
-                                }
-                                @if (goldPurchaseForm.get('makingCharge')?.errors?.['min'] || goldPurchaseForm.get('makingCharge')?.errors?.['max']) {
-                                    <small class="validationError">*Making charges should be 5% to 20%</small>
-                                }
-                            }
-                        </div>
-                    </div>
-                    <mat-divider></mat-divider>
-                    <div formArrayName="items">
-                        @for (item of items.controls; track $index) {
-                            <div formGroupName="{{$index}}" >
-                                <div class="form-group row">
-                                    <div class="col-sm-6 col-md-3 my-2">
-                                        <input type="text" class="form-control" id="itemPurchase" formControlName="itemPurchase" placeholder="Item {{$index+1}}"/>
-                                        @if (item.get('itemPurchase')?.invalid && (item.get('itemPurchase')?.touched || item.get('itemPurchase')?.dirty)) {
-                                            @if (item.get('itemPurchase')?.errors?.['required']) {
-                                                <small class="validationError">*Please enter purchased item </small>
-                                            }
-                                            @else if (item.get('itemPurchase')?.errors?.['pattern']) {
-                                                <small class="validationError">*Special characters are not allowed</small>
-                                            }
-                                        }
-                                    </div>
-                                    <div class="col-sm-6 col-md-3 my-2">
-                                        <input type="text" class="form-control" id="HUID_number" formControlName="HUID" placeholder="HUID Number"/>
-                                        @if (item.get('HUID')?.invalid && (item.get('HUID')?.touched || item.get('HUID')?.dirty)) {
-                                            @if (item.get('HUID')?.errors?.['required']) {
-                                                <small class="validationError">*Please enter HallMark ID</small>
-                                            }
-                                            @else if (item.get('HUID')?.errors?.['pattern']) {
-                                                <small class="validationError">*Special characters are not allowed</small>
-                                            }
-                                        }
-                                    </div>
-                                    <div class="col-sm-6 col-md-3 my-2">
-                                        <input type="number" class="form-control" id="weight" formControlName="weight" placeholder="Item weight" (change)="calculatePrice()"/>
-                                        @if (item.get('weight')?.invalid && (item.get('weight')?.touched || item.get('weight')?.dirty)) {
-                                            @if (item.get('weight')?.errors?.['required']) {
-                                                <small class="validationError">*Please enter gold weight</small>
-                                            }
-                                        }
-                                    </div>
-                                    <div class="col-sm-6 col-md-3 my-2">
-                                        <input type="text" class="form-control" id="price" [value]="item.get('price')?.value | currency:'INR'" readonly/>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary mt-3 px-3 me-2" (click)="addNewItem()">Add more items</button>
-                            <button type="button" class="btn btn-danger mt-3 px-3" (click)="removeItems()" [disabled]="!removeBtn">Remove items</button>
-                        </div>
-                    </div>
-                        <div class="row">
-                            <mat-radio-group formControlName="payment" aria-label="Select payment mode">
-                                <label>Payment: </label>
-                                <mat-radio-button value="cash">Cash</mat-radio-button>
-                                <mat-radio-button value="online">Cheque/Card/UPI</mat-radio-button>
-                            </mat-radio-group>
-                            <div class="row">
-                                <div class="col-sm-6 col-md-3 my-2">
-                                    <label for="URD">Less URD</label>
-                                    <input type="number" class="form-control" id="urd" formControlName="URD" placeholder="Lesss URD"/>
-                                </div>
-                                <div class="col-sm-6 col-md-3 my-2">
-                                    <label for="discount">Discount</label>
-                                    <input type="number" class="form-control" id="discount" formControlName="discount" placeholder="Discount"/>
-                                </div>
+    <div>
+        <form [formGroup]="goldPurchaseForm" (ngSubmit)="save()">
+            <div formArrayName="items">
+                @for (item of items.controls; track $index) {
+                    <div [formGroupName]="$index">
+                        <div class="form-group row">
+                            <mat-form-field class="col-sm-6 col-md-4 my-2">
+                                <mat-label>Item Name</mat-label>
+                                <input matInput id="itemPurchase" [formControlName]="'itemPurchase'" placeholder="Enter item purchased">
                                 
-                            </div>
+                                    @if (item.get('itemPurchase')?.errors?.['required']) {
+                                        <mat-error>*Please enter purchased item</mat-error>
+                                    }
+                                    @else if (item.get('itemPurchase')?.errors?.['pattern']) {
+                                        <mat-error>*Special characters are not allowed</mat-error>
+                                    }
+                            </mat-form-field>
+                            <mat-form-field class="col-sm-6 col-md-2 my-2">
+                                <mat-label>Item HUID</mat-label>
+                                <input matInput id="HUID_number" formControlName="HUID" placeholder="Enter Hallmark ID">
+                                
+                                    @if (item.get('HUID')?.errors?.['required']) {
+                                        <mat-error>*Please enter HallMark ID</mat-error>
+                                    }
+                                    @else if (item.get('HUID')?.errors?.['pattern']) {
+                                        <mat-error>*Special characters are not allowed</mat-error>
+                                    }
+                            </mat-form-field>
+                            <mat-form-field class="col-sm-6 col-md-2 my-2">
+                                <mat-label>Item Weight</mat-label>
+                                <input matInput id="weight" formControlName="weight" placeholder="Enter Item weight" (change)="calculatePrice($any($event).target.value)" />
+                                    @if (item.get('weight')?.errors?.['required']) {
+                                        <mat-error>*Please enter gold weight</mat-error>
+                                    }
+                            </mat-form-field>
+                            <mat-form-field class="col-sm-6 col-md-2 my-2">
+                                <mat-label>Select Material</mat-label>
+                                <mat-select (selectionChange)="calculatePrice($any($event).value)" formControlName="materialtype">
+                                        @for (material of materialType; track material) {
+                                            <mat-option [value]="material">{{ material }}</mat-option>
+                                        }
+                                </mat-select>
+                                @if (item.get('materialtype')?.errors?.['required']) {
+                                        <mat-error>*Please select jewellery material</mat-error>
+                                    }
+                            </mat-form-field>
+                            <mat-form-field class="col-sm-6 col-md-2 my-2">
+                                <input matInput id="price" [value]=" item.get('price')?.value | currency:'INR'" placeholder="Item Price" disabled readonly/>
+                            </mat-form-field>
                         </div>
-                        <div class="row mt-3">                            
-                            <div class="col-md-6 d-flex justify-content-start align-items-center">
-                                <h5>Total Price: {{totalPrice |currency:'INR'}}</h5>
-                                <input type="hidden" class="form-control" id="finalPrice" formControlName="finalPrice" placeholder="finalPrice"/>
-                            </div>
-                            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                <button type="submit" class="btn btn-primary mt-3 px-3" [disabled]="!goldPurchaseForm.valid">Generate Receipt</button>
-                            </div>
-                        </div>
-                </form>
+                    </div>
+                }
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary mt-3 px-3 me-2" (click)="addNewItem()">Add more items</button>
+                    <button type="button" class="btn btn-danger mt-3 px-3" (click)="removeItems()" [disabled]="!removeBtn">Remove items</button>
+                </div>
             </div>
-        </mat-expansion-panel>
-    </mat-accordion>
+            <div class="row">
+                <div class="row">
+                    <mat-form-field class="col-sm-6 col-md-3 my-2">
+                        <input matInput id="urd" formControlName="URD" placeholder="Lesss URD" (change)="finalPrice()"/>
+                    </mat-form-field>
+                    <mat-form-field class="col-sm-6 col-md-3 my-2">
+                        <input matInput id="discount" formControlName="discount" placeholder="Discount" (change)="finalPrice()"/>
+                    </mat-form-field>
+                </div>
+                <mat-radio-group formControlName="payment" aria-label="Select payment mode">
+                    <label>Payment: </label>
+                    <mat-radio-button value="cash">Cash</mat-radio-button>
+                    <mat-radio-button value="online">Cheque/Card/UPI</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div class="row mt-3">                            
+                <div class="col-md-6 d-flex justify-content-start align-items-center">
+                    <h5>Total Price: {{totalPrice |currency:'INR'}}</h5>
+                    <input type="hidden" class="form-control" id="finalPrice" formControlName="finalPrice" placeholder="finalPrice"/>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                    <button type="submit" class="btn btn-primary mt-3 px-3" [disabled]="!goldPurchaseForm.valid">Generate Receipt</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>

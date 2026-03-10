@@ -1,20 +1,115 @@
 <div class="container-fluid">
-  <div class="row">
-    <div>
-      <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="center" [selectedIndex]="0">
-        @for (tab of tabs; track tab) {
-            <mat-tab [label]="tab">
-                @if (tab === 'GOLD') {
-                  <app-customer-detail (moveToNextForm)="onStepChange($any($event))"></app-customer-detail>
-                  <app-gold-detail [currentStep]="currentStep"></app-gold-detail>
-                  <!-- <app-gold-detail></app-gold-detail> -->
-                   <!-- <app-receipt></app-receipt> -->
-                } @else if (tab === 'SILVER') {
-                  <app-customer-detail></app-customer-detail>
-                }
-            </mat-tab>
-        }
-      </mat-tab-group>
+  <div class="row shadow p-3 mb-5 bg-body-tertiary rounded bg-secondary-subtle">
+    <div class="col-md-10 d-flex align-items-center">
+      <h2>Jewellery Purchase Receipt</h2>
+    </div>
+    <div class="col-md-2 mt-3 d-flex align-items-center justify-content-end">
+      <button class="btn btn-primary">Add New Cusotmer</button>
     </div>
   </div>
+  <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+  <div class="ms-md-3">
+    <div class="row">
+      <div class="col-md-5 col-sm-12">
+        <div class="border p-2">
+          <form [formGroup]="jewelleryRateForm" class="row g-3">
+            <div class="row">
+              <div class="col-sm-6">
+                <mat-form-field class="mt-3">
+                  <mat-label>Gold rate</mat-label>
+                  <input
+                    type="number"
+                    id="goldRate"
+                    matInput
+                    formControlName="goldRate"
+                    placeholder="Today's Gold rate"
+                  />
+                  @if (
+                    jewelleryRateForm.get("goldRate")?.errors?.["required"]
+                  ) {
+                    <mat-error>*Please enter gold rate</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="col-sm-6">
+                <mat-form-field class="mt-3">
+                  <mat-label>Silver rate</mat-label>
+                  <input
+                    type="number"
+                    matInput
+                    id="silverdRate"
+                    formControlName="silverdRate"
+                    placeholder="Today's Silver rate"
+                  />
+                  @if (
+                    jewelleryRateForm.get("silverdRate")?.errors?.["required"]
+                  ) {
+                    <mat-error>*Please enter silver rate</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+          <div class="row mt-3">
+            <div class="col-md-8 mt-2">
+              <mat-form-field>
+                <mat-label>Select Customer Name</mat-label>
+                <mat-select
+                  (opened)="getCustomers()"
+                  (selectionChange)="getCustomerById($event.value)"
+                >
+                  <div class="p-2">
+                    <input
+                      type="text"
+                      class="form-control my-1"
+                      placeholder="Search customer..."
+                    />
+                    @for (customer of customerList; track $index) {
+                      <mat-option value="{{ customer.id }}"
+                        >{{ customer.firstName }}
+                        {{ customer.lastName }}</mat-option
+                      >
+                    } @empty {
+                      <mat-option>No customers found</mat-option>
+                    }
+                  </div>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-md-3 d-flex align-items-center justify-content-end">
+              <button class="btn btn-primary mt-2 px-3" [disabled]="!enableNextButton" (click)="displayItemComponent()" >Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      @if (customer && itemComponent) {
+        <div class="col-md-6 col-sm-12 border">
+          <h5 class="mt-2">Customer Details:</h5>
+          <table class="table">
+            <tr>
+              <th>Name:</th>
+              <td>{{ customer?.firstName }} {{ customer?.lastName }}</td>
+            </tr>
+            <tr>
+              <th>Contact:</th>
+              <td>{{ customer?.contact }}</td>
+            </tr>
+            <tr>
+              <th>Address:</th>
+              <td>{{ customer?.address }}</td>
+            </tr>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+  <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
 </div>
+@if (itemComponent) {
+  <div class="m-4">
+    <mat-divider></mat-divider>
+    <div>
+      <app-gold-detail [customerId]="customer?.id"></app-gold-detail>
+    </div>
+  </div>
+}

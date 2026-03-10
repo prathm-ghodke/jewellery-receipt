@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { CustomerServiceService } from '../service/customer-service.service';
 @Component({
   selector: 'app-customer-detail',
   imports: [MatExpansionModule, ReactiveFormsModule],
@@ -14,6 +15,7 @@ export class CustomerDetailComponent {
   step = 0;
   @Output() moveToNextForm = new EventEmitter<number>();
   @Output() customerData = new EventEmitter<any>();
+  customerService = inject(CustomerServiceService);
   
   constructor(private formBuilder: FormBuilder) {}
 
@@ -30,9 +32,16 @@ export class CustomerDetailComponent {
   }
   save() {
     if (this.customerForm?.valid) {
-      // this.customerData.emit(this.customerForm.value);
-      this.moveToNextForm.emit(this.step =+ 1);
-      console.log('Form is valid');
+      this.customerService.createCustomer(this.customerForm.value).subscribe({
+        next: (response) => {
+          // console.log('Customer created successfully:', response);
+          this.customerData.emit(response);
+          this.moveToNextForm.emit(this.step =+ 1);
+        },
+        error: (error) => {
+          alert('Customer with same details already exists:');
+        }
+      });
     } else {
       console.log('Form is invalid');
     }
